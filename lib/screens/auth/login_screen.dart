@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/theme.dart';
 import '../../cubits/auth/auth_cubit.dart';
+import '../../data/models/user_model.dart';
 import '../../widgets/common_widgets.dart';
+import '../shared/onboarding_screen.dart';
+import '../student/student_shell.dart';
+import '../startup/startup_shell.dart';
 import 'role_select_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -25,6 +29,21 @@ class _LoginScreenState extends State<LoginScreen> {
           if (state.errorMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.errorMessage!), backgroundColor: AppColors.error),
+            );
+            return;
+          }
+          if (state.status == AuthStatus.authenticated && state.user != null) {
+            Widget destination;
+            if (!state.user!.onboardingComplete) {
+              destination = const OnboardingScreen();
+            } else if (state.user!.role == UserRole.student) {
+              destination = const StudentShell();
+            } else {
+              destination = const StartupShell();
+            }
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => destination),
+                  (_) => false,
             );
           }
         },
@@ -55,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _password,
                     obscureText: true,
                     validator: (v) =>
-                        (v == null || v.length < 6) ? 'Minimum 6 characters' : null,
+                    (v == null || v.length < 6) ? 'Minimum 6 characters' : null,
                   ),
                   const SizedBox(height: 24),
                   BlocBuilder<AuthCubit, AuthState>(
@@ -66,9 +85,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             context.read<AuthCubit>().signIn(
-                                  email: _email.text.trim(),
-                                  password: _password.text.trim(),
-                                );
+                              email: _email.text.trim(),
+                              password: _password.text.trim(),
+                            );
                           }
                         },
                       );

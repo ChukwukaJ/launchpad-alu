@@ -4,6 +4,7 @@ import '../../core/theme.dart';
 import '../../cubits/auth/auth_cubit.dart';
 import '../../data/models/user_model.dart';
 import '../../widgets/common_widgets.dart';
+import '../shared/onboarding_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   final UserRole role;
@@ -29,6 +30,13 @@ class _SignupScreenState extends State<SignupScreen> {
           if (state.errorMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.errorMessage!), backgroundColor: AppColors.error),
+            );
+            return;
+          }
+          if (state.status == AuthStatus.authenticated && state.user != null) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+                  (_) => false,
             );
           }
         },
@@ -60,7 +68,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     controller: _password,
                     obscureText: true,
                     validator: (v) =>
-                        (v == null || v.length < 6) ? 'Minimum 6 characters' : null,
+                    (v == null || v.length < 6) ? 'Minimum 6 characters' : null,
                   ),
                   const SizedBox(height: 24),
                   BlocBuilder<AuthCubit, AuthState>(
@@ -71,11 +79,11 @@ class _SignupScreenState extends State<SignupScreen> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             context.read<AuthCubit>().signUp(
-                                  email: _email.text.trim(),
-                                  password: _password.text.trim(),
-                                  fullName: _name.text.trim(),
-                                  role: widget.role,
-                                );
+                              email: _email.text.trim(),
+                              password: _password.text.trim(),
+                              fullName: _name.text.trim(),
+                              role: widget.role,
+                            );
                           }
                         },
                       );
