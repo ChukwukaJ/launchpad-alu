@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../cubits/application/application_cubit.dart';
 import '../../cubits/auth/auth_cubit.dart';
 import '../../cubits/bookmark/bookmark_cubit.dart';
 import '../../cubits/opportunity/opportunity_cubit.dart';
@@ -44,7 +45,12 @@ class StudentBookmarksScreen extends StatelessWidget {
                     isBookmarked: true,
                     onBookmarkTap: () => context.read<BookmarkCubit>().toggle(opp.id),
                     onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => OpportunityDetailScreen(opportunity: opp)),
+                      MaterialPageRoute(
+                        builder: (routeContext) => BlocProvider.value(
+                          value: context.read<ApplicationCubit>(),
+                          child: OpportunityDetailScreen(opportunity: opp),
+                        ),
+                      ),
                     ),
                   );
                 },

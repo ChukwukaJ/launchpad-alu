@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/theme.dart';
+import '../../cubits/application/application_cubit.dart';
 import '../../cubits/auth/auth_cubit.dart';
 import '../../cubits/bookmark/bookmark_cubit.dart';
 import '../../cubits/opportunity/opportunity_cubit.dart';
@@ -12,9 +13,6 @@ import '../../widgets/opportunity_card.dart';
 import 'opportunity_detail_screen.dart';
 import 'notifications_screen.dart';
 
-/// The curated "front door" tab — greeting, top match, quick category
-/// browsing, and a short recent list. Full search/filtering lives on the
-/// Explore tab; Home is meant to be skimmed, not searched.
 class StudentHomeScreen extends StatelessWidget {
   final void Function(String category) onBrowseCategory;
   const StudentHomeScreen({super.key, required this.onBrowseCategory});
@@ -104,7 +102,12 @@ class StudentHomeScreen extends StatelessWidget {
                               isBookmarked: bookmarkState.isBookmarked(opp.id),
                               onBookmarkTap: () => context.read<BookmarkCubit>().toggle(opp.id),
                               onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => OpportunityDetailScreen(opportunity: opp)),
+                                MaterialPageRoute(
+                                  builder: (routeContext) => BlocProvider.value(
+                                    value: context.read<ApplicationCubit>(),
+                                    child: OpportunityDetailScreen(opportunity: opp),
+                                  ),
+                                ),
                               ),
                             );
                           },
@@ -153,7 +156,12 @@ class StudentHomeScreen extends StatelessWidget {
                               isBookmarked: bookmarkState.isBookmarked(opp.id),
                               onBookmarkTap: () => context.read<BookmarkCubit>().toggle(opp.id),
                               onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => OpportunityDetailScreen(opportunity: opp)),
+                                MaterialPageRoute(
+                                  builder: (routeContext) => BlocProvider.value(
+                                    value: context.read<ApplicationCubit>(),
+                                    child: OpportunityDetailScreen(opportunity: opp),
+                                  ),
+                                ),
                               ),
                             ),
                           );

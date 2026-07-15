@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/theme.dart';
 import '../../cubits/application/application_cubit.dart';
 import '../../cubits/auth/auth_cubit.dart';
+import '../../cubits/bookmark/bookmark_cubit.dart';
+import '../../cubits/opportunity/opportunity_cubit.dart';
 import '../../data/models/application_model.dart';
 import 'notifications_screen.dart';
 import 'profile_sub_screens.dart';
@@ -71,8 +73,18 @@ class StudentProfileScreen extends StatelessWidget {
             _MenuTile(
               icon: Icons.bookmark_border_rounded,
               label: 'Saved Opportunities',
-              onTap: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const StudentBookmarksScreen())),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (routeContext) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(value: context.read<BookmarkCubit>()),
+                      BlocProvider.value(value: context.read<OpportunityCubit>()),
+                      BlocProvider.value(value: context.read<ApplicationCubit>()),
+                    ],
+                    child: const StudentBookmarksScreen(),
+                  ),
+                ),
+              ),
             ),
             _MenuTile(
               icon: Icons.notifications_none_rounded,

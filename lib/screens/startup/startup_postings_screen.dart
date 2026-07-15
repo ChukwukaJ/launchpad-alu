@@ -20,14 +20,19 @@ class StartupPostingsScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: isVerified
             ? () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => PostOpportunityScreen(startup: startup)),
-                )
+          MaterialPageRoute(
+            builder: (routeContext) => BlocProvider.value(
+              value: context.read<OpportunityCubit>(),
+              child: PostOpportunityScreen(startup: startup),
+            ),
+          ),
+        )
             : () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Your startup must be verified before posting.'),
-                    backgroundColor: AppColors.warning,
-                  ),
-                ),
+          const SnackBar(
+            content: Text('Your startup must be verified before posting.'),
+            backgroundColor: AppColors.warning,
+          ),
+        ),
         icon: const Icon(Icons.add),
         label: const Text('New Posting'),
         backgroundColor: isVerified ? AppColors.primary : AppColors.textSecondary,

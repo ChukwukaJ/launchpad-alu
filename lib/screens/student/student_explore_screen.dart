@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants.dart';
 import '../../core/theme.dart';
+import '../../cubits/application/application_cubit.dart';
 import '../../cubits/auth/auth_cubit.dart';
 import '../../cubits/bookmark/bookmark_cubit.dart';
 import '../../cubits/opportunity/opportunity_cubit.dart';
@@ -57,8 +58,6 @@ class StudentExploreScreen extends StatelessWidget {
                     if (searchState.workMode != null) {
                       results = results.where((o) => o.workMode == searchState.workMode).toList();
                     }
-                    // Recommendation: surface best skill-matches first when no
-                    // active text search, so the "for you" feel comes for free.
                     if (searchState.query.isEmpty) {
                       results.sort((a, b) =>
                           b.matchScore(studentSkills).compareTo(a.matchScore(studentSkills)));
@@ -88,7 +87,10 @@ class StudentExploreScreen extends StatelessWidget {
                                   context.read<BookmarkCubit>().toggle(opp.id),
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => OpportunityDetailScreen(opportunity: opp),
+                                  builder: (routeContext) => BlocProvider.value(
+                                    value: context.read<ApplicationCubit>(),
+                                    child: OpportunityDetailScreen(opportunity: opp),
+                                  ),
                                 ),
                               ),
                             );

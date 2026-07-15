@@ -63,7 +63,12 @@ service cloud.firestore {
       allow create: if isSignedIn() &&
         get(/databases/$(database)/documents/startups/$(request.resource.data.startupId)).data.ownerUid == request.auth.uid &&
         get(/databases/$(database)/documents/startups/$(request.resource.data.startupId)).data.status == 'verified';
-      allow update, delete: if isSignedIn() &&
+      allow update: if isSignedIn() && (
+        get(/databases/$(database)/documents/startups/$(resource.data.startupId)).data.ownerUid == request.auth.uid ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['applicantCount']) &&
+         request.resource.data.applicantCount == resource.data.applicantCount + 1)
+      );
+      allow delete: if isSignedIn() &&
         get(/databases/$(database)/documents/startups/$(resource.data.startupId)).data.ownerUid == request.auth.uid;
     }
 

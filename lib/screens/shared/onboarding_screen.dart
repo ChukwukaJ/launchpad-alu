@@ -18,11 +18,9 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  // student fields
   final Set<String> _selectedSkills = {};
   final _bioController = TextEditingController();
 
-  // startup fields
   final _startupName = TextEditingController();
   final _tagline = TextEditingController();
   final _description = TextEditingController();
@@ -40,12 +38,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final user = context.watch<AuthCubit>().state.user!;
     final isStudent = user.role == UserRole.student;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('One last step')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: isStudent ? _studentOnboarding(context, user) : _startupOnboarding(context, user),
+    return BlocProvider(
+      create: (_) => StartupCubit(),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('One last step')),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: isStudent ? _studentOnboarding(context, user) : _startupOnboarding(context, user),
+          ),
         ),
       ),
     );
@@ -68,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               label: Text(skill),
               selected: selected,
               onSelected: (v) => setState(
-                  () => v ? _selectedSkills.add(skill) : _selectedSkills.remove(skill)),
+                      () => v ? _selectedSkills.add(skill) : _selectedSkills.remove(skill)),
               selectedColor: AppColors.primary.withOpacity(0.15),
               checkmarkColor: AppColors.primary,
             );
@@ -81,13 +82,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           label: 'Get Started',
           onPressed: () async {
             await context.read<AuthCubit>().completeOnboarding(
-                  skills: _selectedSkills.toList(),
-                  bio: _bioController.text.trim(),
-                );
+              skills: _selectedSkills.toList(),
+              bio: _bioController.text.trim(),
+            );
             if (context.mounted) {
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (_) => const StudentShell()),
-                (_) => false,
+                    (_) => false,
               );
             }
           },
@@ -148,7 +149,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 if (context.mounted) {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const StartupShell()),
-                    (_) => false,
+                        (_) => false,
                   );
                 }
               },
